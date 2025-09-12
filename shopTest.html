@@ -75,6 +75,7 @@
       display: flex;
       gap: 1rem;
       align-items: center;
+      position: relative;
     }
 
     .icon-basket {
@@ -108,25 +109,92 @@
       font-weight: bold;
     }
 
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      font-size: 0.9rem;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
     .btn-outline {
       background: transparent;
       color: #654321;
       border: 2px solid #654321;
-      padding: 0.75rem 1.5rem;
-      border-radius: 25px;
-      text-decoration: none;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(101, 67, 33, 0.2);
-      font-size: 0.9rem;
+      box-shadow:
+        0 4px 15px rgba(101, 67, 33, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
     }
 
     .btn-outline:hover {
       background: #654321;
       color: #f5f5dc;
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(101, 67, 33, 0.4);
+      box-shadow:
+        0 6px 20px rgba(101, 67, 33, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
+      color: #f5f5dc;
+      box-shadow:
+        0 4px 15px rgba(139, 69, 19, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.8s ease;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #654321 0%, #4a2c0f 100%);
+      transform: translateY(-2px);
+      box-shadow:
+        0 6px 20px rgba(139, 69, 19, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.3);
     }
 
     /* Shopping Cart Dropdown */
@@ -302,6 +370,7 @@
       flex-direction: column;
       cursor: pointer;
       padding: 0.5rem;
+      margin-right: 0.75rem;
     }
 
     .mobile-menu-toggle span {
@@ -329,7 +398,7 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 2rem;
-      margin-top: 120px;
+      margin-top: 240px;
       background: #faf8f5;
       border-radius: 20px;
       margin-left: 2rem;
@@ -341,9 +410,10 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 1.5rem;
+      padding-top: 1rem;
     }
 
     .filters {
@@ -379,6 +449,7 @@
       border-radius: 8px;
       background: white;
       font-size: 1rem;
+      cursor: pointer;
     }
 
     /* Section Title */
@@ -394,7 +465,7 @@
     /* Products Grid */
     #productsGrid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 3rem;
       margin-top: 2rem;
     }
@@ -407,11 +478,36 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       border: 1px solid rgba(139, 69, 19, 0.1);
       cursor: pointer;
+      position: relative;
+      width: 100%;
     }
 
     .product-card:hover {
       transform: translateY(-10px);
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Product Badges */
+    .product-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #e74c3c;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      z-index: 2;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .product-badge.new {
+      background: #27ae60;
+    }
+
+    .product-badge.bestseller {
+      background: #f39c12;
     }
 
     .product-card img {
@@ -599,8 +695,8 @@
 
     .accordion-content {
       padding: 1rem;
-      background: white;
       display: none;
+      background: white;
     }
 
     .accordion-content.active {
@@ -616,37 +712,40 @@
       transform: rotate(45deg);
     }
 
+    /* Note Tags */
     .note-tag {
       display: inline-block;
-      background: #f8f6f3;
-      color: #654321;
+      background: #f0f0f0;
+      color: #333;
       padding: 0.5rem 1rem;
       border-radius: 20px;
       margin: 0.25rem;
       font-size: 0.9rem;
-      font-weight: 500;
-      border: 1px solid rgba(101, 67, 33, 0.2);
+      border: 1px solid #e0e0e0;
     }
 
     .expanded-product-price {
       font-size: 2rem;
       color: #8B4513;
       font-weight: bold;
+      margin: 1rem 0;
     }
 
     .expanded-product-actions {
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      margin-top: 1rem;
     }
 
     .add-to-cart-expanded {
+      width: 100%;
       background: #654321;
       color: white;
       border: none;
-      padding: 1rem 2rem;
+      padding: 1rem;
       border-radius: 10px;
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
@@ -658,37 +757,37 @@
     }
 
     .pay-with-airtel {
-      background: #E31837;
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      border-radius: 10px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      background: #f0f0f0;
+      border: 2px solid #e0e0e0;
+      padding: 1rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: #333;
     }
 
     .pay-with-airtel:hover {
-      background: #C41230;
-      transform: translateY(-2px);
+      border-color: #654321;
+      background: #f8f8f8;
     }
 
     .pay-with-airtel img {
       width: 24px;
       height: 24px;
-      border-radius: 4px;
+      object-fit: contain;
     }
 
     .more-payment-options {
       text-align: center;
       color: #654321;
       text-decoration: none;
-      font-weight: 600;
-      padding: 0.5rem;
+      font-weight: 500;
       transition: color 0.3s ease;
     }
 
@@ -697,16 +796,19 @@
       text-decoration: underline;
     }
 
+    /* You May Also Like Section */
     .you-may-also-like {
-      padding: 2rem 3rem 3rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
       border-top: 1px solid #e0e0e0;
     }
 
     .you-may-also-like h3 {
-      font-size: 1.5rem;
-      color: #333;
-      margin: 0 0 1.5rem;
       text-align: center;
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 2rem;
+      font-family: 'Playfair Display', Georgia, serif;
     }
 
     .recommendations-grid {
@@ -719,19 +821,22 @@
       background: white;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
       cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .recommendation-card:hover {
       transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
 
     .recommendation-image {
+      width: 100%;
       height: 150px;
       background-size: cover;
       background-position: center;
+      background-repeat: no-repeat;
     }
 
     .recommendation-info {
@@ -743,12 +848,13 @@
       font-weight: 600;
       color: #333;
       margin: 0 0 0.5rem;
+      font-family: 'Playfair Display', Georgia, serif;
     }
 
     .recommendation-price {
-      font-size: 1.1rem;
       color: #8B4513;
       font-weight: bold;
+      margin: 0;
     }
 
     /* Footer */
@@ -757,12 +863,12 @@
       color: #f5f5dc;
       padding: 3rem 2rem;
       border-top: 1px solid rgba(139, 69, 19, 0.2);
-      margin-top: 3rem;
     }
 
-    .footer .container {
-      max-width: 1400px;
+    .container {
+      max-width: 1200px;
       margin: 0 auto;
+      padding: 0 2rem;
     }
 
     .footer-content {
@@ -770,27 +876,35 @@
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 2rem;
+    }
+
+    .footer-left {
+      color: #f5f5dc;
     }
 
     .footer-left p {
-      margin: 0.25rem 0;
+      margin-bottom: 0.5rem;
     }
 
     .footer-left .tagline {
-      opacity: 0.9;
+      font-size: 0.9rem;
+      font-style: italic;
+      opacity: 0.8;
     }
 
     .footer-right {
       display: flex;
-      gap: 1.25rem;
-      align-items: center;
+      gap: 2rem;
+      color: #f5f5dc;
+      flex-wrap: wrap;
     }
 
-    .footer-right .social-item {
+    .social-item {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.5rem;
+      font-weight: 500;
     }
 
     /* Floating WhatsApp Button */
@@ -912,21 +1026,28 @@
         display: flex;
       }
 
+      /* Left slide-in drawer */
       .nav-links {
-        display: none;
-        position: absolute;
-        top: 100%;
+        position: fixed;
+        top: 0;
         left: 0;
-        width: 100%;
-        background: rgba(198, 185, 164, 0.95);
-        flex-direction: column;
-        padding: 1rem;
+        height: 100vh;
+        width: 60vw;
+        max-width: 320px;
+        background: rgba(198, 185, 164, 0.98);
+        backdrop-filter: blur(10px);
+        padding: 5rem 1.25rem 1.25rem;
         gap: 1rem;
-        border-top: 1px solid rgba(139, 69, 19, 0.2);
+        border-right: 1px solid rgba(139, 69, 19, 0.2);
+        display: flex;
+        flex-direction: column;
+        transform: translateX(-100%);
+        transition: transform .3s ease;
+        z-index: 1100;
       }
 
       .nav-links.active {
-        display: flex;
+        transform: translateX(0);
       }
 
       .shop-header {
@@ -939,7 +1060,48 @@
       }
 
       #productsGrid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .filter-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .sort-select {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+      }
+
+      .main-content {
+        margin-top: 160px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #productsGrid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-btn {
+        padding: 0.45rem 0.875rem;
+        font-size: 0.85rem;
+      }
+
+      .brand-name,
+      .product-title,
+      .product-price {
+        font-size: 0.95rem;
+      }
+
+      .add-to-cart {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
       }
     }
   </style>
@@ -949,15 +1111,15 @@
   <!-- Navigation Bar -->
   <nav class="navbar" id="navbar">
     <div class="nav-container">
-      <a href="index.html" class="logo">
-        <img src="perfumes/sanctuary scents logo transparent.png" alt="Sanctuary Scents Logo" class="logo-image">
-      </a>
-
       <div class="mobile-menu-toggle" id="mobileMenuToggle">
         <span></span>
         <span></span>
         <span></span>
       </div>
+
+      <a href="index.html" class="logo">
+        <img src="perfumes/sanctuary scents logo transparent.png" alt="Sanctuary Scents Logo" class="logo-image">
+      </a>
 
       <ul class="nav-links" id="navLinks">
         <li><a href="index.html">Home</a></li>
@@ -968,7 +1130,7 @@
         <div class="icon-basket" id="cartIcon">
           <span class="cart-count" id="cartCount">0</span>
         </div>
-        <a href="checkout.html" class="btn-outline">Checkout</a>
+        <a href="checkout.html" class="btn btn-primary">Checkout</a>
       </div>
     </div>
 
@@ -997,12 +1159,9 @@
         <button class="filter-btn" data-filter="new">New Arrivals</button>
         <button class="filter-btn" data-filter="bestsellers">Bestsellers</button>
       </div>
-      <select class="sort-select">
-        <option>Sort by: Featured</option>
-        <option>Price: Low to High</option>
-        <option>Price: High to Low</option>
-        <option>Newest First</option>
-        <option>Most Popular</option>
+      <select class="sort-select" id="sortSelect">
+        <option value="price-high-low">Price: High to Low</option>
+        <option value="price-low-high">Price: Low to High</option>
       </select>
     </div>
 
@@ -1296,8 +1455,60 @@
       button.addEventListener('click', () => {
         filterButtons.forEach(btn => btn.classList.remove('active'))
         button.classList.add('active')
-        // Filter logic can be implemented here
+
+        const filter = button.dataset.filter
+        applyFilter(filter)
       })
+    })
+
+    function applyFilter(filter, shouldRender = true) {
+      let filteredProducts = [...products]
+
+      if (filter === 'masculine') {
+        filteredProducts = products.filter(p => p.type === 'M')
+      } else if (filter === 'feminine') {
+        filteredProducts = products.filter(p => p.type === 'F')
+      } else if (filter === 'unisex') {
+        filteredProducts = products.filter(p => p.type === 'U')
+      } else if (filter === 'new') {
+        // Get the 4 most recent products
+        filteredProducts = products
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, 4)
+      } else if (filter === 'bestsellers') {
+        // Sort by units sold (most to least)
+        filteredProducts = products
+          .filter(p => p.units !== undefined && p.units > 0)
+          .sort((a, b) => (b.units || 0) - (a.units || 0))
+          .slice(0, 4)
+      }
+      // 'all' filter shows all products
+
+      if (shouldRender) {
+        renderProducts(filteredProducts)
+      }
+
+      return filteredProducts
+    }
+
+    // Sort functionality
+    const sortSelect = document.getElementById('sortSelect')
+    sortSelect.addEventListener('change', () => {
+      const selectedValue = sortSelect.value
+      let sortedProducts = [...products]
+
+      // Get current active filter
+      const activeFilter = document.querySelector('.filter-btn.active').dataset.filter
+      if (activeFilter !== 'all') {
+        sortedProducts = applyFilter(activeFilter, false) // Apply filter without re-rendering
+      }
+
+      if (selectedValue === 'price-low-high') {
+        sortedProducts.sort((a, b) => a.price - b.price)
+      } else if (selectedValue === 'price-high-low') {
+        sortedProducts.sort((a, b) => b.price - a.price)
+      }
+      renderProducts(sortedProducts)
     })
 
     async function loadProducts() {
@@ -1312,17 +1523,38 @@
       }
 
       products = data
-      renderProducts()
+      // Initial render uses currently selected sort option
+      const initialSort = document.getElementById('sortSelect').value
+      let initialProducts = [...products]
+      if (initialSort === 'price-low-high') {
+        initialProducts.sort((a, b) => a.price - b.price)
+      } else if (initialSort === 'price-high-low') {
+        initialProducts.sort((a, b) => b.price - a.price)
+      }
+      renderProducts(initialProducts)
     }
 
-    function renderProducts() {
+    function renderProducts(productsToRender = products) {
       const grid = document.getElementById('productsGrid')
       grid.innerHTML = ''
 
-      products.forEach(p => {
+      productsToRender.forEach(p => {
         const card = document.createElement('div')
         card.className = 'product-card'
+
+        // Determine if product should have badges
+        const isNew = isNewArrival(p)
+        const isBestseller = isBestsellerProduct(p)
+
+        let badgeHTML = ''
+        if (isNew) {
+          badgeHTML = '<div class="product-badge new">NEW</div>'
+        } else if (isBestseller) {
+          badgeHTML = '<div class="product-badge bestseller">BESTSELLER</div>'
+        }
+
         card.innerHTML = `
+          ${badgeHTML}
           <img src="${p.image_url}" alt="${p.product_name}">
           <div class="product-info">
             <div class="brand-name">${p.brand_name}</div>
@@ -1351,6 +1583,25 @@
 
         grid.appendChild(card)
       })
+    }
+
+    // Helper functions for badges
+    function isNewArrival(product) {
+      // Check if product was created within the last 30 days
+      const thirtyDaysAgo = new Date()
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+      return new Date(product.created_at) > thirtyDaysAgo
+    }
+
+    function isBestsellerProduct(product) {
+      // Check if product is in top 20% by units sold
+      if (!product.units || product.units === 0) return false
+
+      const sortedByUnits = [...products].sort((a, b) => (b.units || 0) - (a.units || 0))
+      const top20Percent = Math.ceil(products.length * 0.2)
+      const topProducts = sortedByUnits.slice(0, top20Percent)
+
+      return topProducts.some(p => p.id === product.id)
     }
 
     function openExpandedModal(product) {

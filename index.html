@@ -863,6 +863,7 @@
             flex-direction: column;
             cursor: pointer;
             padding: 0.5rem;
+            margin-right: 0.75rem;
         }
 
         .mobile-menu-toggle span {
@@ -899,21 +900,28 @@
                 display: flex;
             }
 
+            /* Left slide-in drawer */
             .nav-links {
-                display: none;
-                position: absolute;
-                top: 100%;
+                position: fixed;
+                top: 0;
                 left: 0;
-                width: 100%;
-                background: rgba(198, 185, 164, 0.95);
-                flex-direction: column;
-                padding: 1rem;
+                height: 100vh;
+                width: 60vw;
+                max-width: 320px;
+                background: rgba(198, 185, 164, 0.98);
+                backdrop-filter: blur(10px);
+                padding: 5rem 1.25rem 1.25rem;
                 gap: 1rem;
-                border-top: 1px solid rgba(139, 69, 19, 0.2);
+                border-right: 1px solid rgba(139, 69, 19, 0.2);
+                display: flex;
+                flex-direction: column;
+                transform: translateX(-100%);
+                transition: transform .3s ease;
+                z-index: 1100;
             }
 
             .nav-links.active {
-                display: flex;
+                transform: translateX(0);
             }
 
             .hero h1 {
@@ -949,23 +957,23 @@
     <!-- Navigation Bar -->
     <nav class="navbar" id="navbar">
         <div class="nav-container">
-            <a href="sanctuary1.html" class="logo">
-                <img src="perfumes/sanctuary scents logo transparent.png" alt="Sanctuary Scents Logo"
-                    class="logo-image">
-            </a>
-            
             <div class="mobile-menu-toggle" id="mobileMenuToggle">
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
 
+            <a href="sanctuary1.html" class="logo">
+                <img src="perfumes/sanctuary scents logo transparent.png" alt="Sanctuary Scents Logo"
+                    class="logo-image">
+            </a>
+
             <ul class="nav-links" id="navLinks">
                 <li><a href="sanctuary1.html" class="active">Home</a></li>
                 <li><a href="shopTest.html">Shop</a></li>
                 <li><a href="contact.html">Contact</a></li>
             </ul>
-            
+
             <div class="nav-actions">
                 <div class="icon-basket" id="cartIcon">
                     <span class="cart-count" id="cartCount">0</span>
@@ -983,7 +991,8 @@
                 <!-- Cart items will be populated here -->
             </div>
             <div class="cart-footer">
-                <button class="proceed-checkout" id="proceedCheckout" style="display: none;">Proceed to Checkout</button>
+                <button class="proceed-checkout" id="proceedCheckout" style="display: none;">Proceed to
+                    Checkout</button>
             </div>
         </div>
     </nav>
@@ -1027,47 +1036,6 @@
                     <h3>Fast Shipping</h3>
                     <p>Same-day delivery for products in stock. Lightning-fast delivery with tracking to your door.
                     </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Featured Products -->
-    <section class="products">
-        <div class="container">
-            <h2 class="section-title">Featured Fragrances</h2>
-            <div class="products-grid">
-                <div class="product-card">
-                    <div class="product-image" style="background-image: url('perfumes/lattafa nebras box.webp');">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Lattafa Nebras</h3>
-                        <p>A sophisticated oriental fragrance featuring notes of vanilla, amber, and sandalwood. Perfect
-                            for evening wear with its warm, sensual character.</p>
-                        <p class="product-price">UGX 135,000</p>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-image smaller"
-                        style="background-image: url('perfumes/lattafa eclaire box.webp');">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Lattafa Eclaire</h3>
-                        <p>An elegant blend of bergamot, jasmine, and white musk. This fresh and modern fragrance offers
-                            a clean, sophisticated scent perfect for daily wear.</p>
-                        <p class="product-price">UGX 145,000</p>
-                    </div>
-                </div>
-                <div class="product-card">
-                    <div class="product-image smaller"
-                        style="background-image: url('perfumes/club de nuit  intense man box.webp');">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Club de Nuit Intense Man</h3>
-                        <p>A powerful masculine fragrance with notes of black currant, bergamot, and birch. Features a
-                            distinctive smoky leather accord that's bold and unforgettable.</p>
-                        <p class="product-price">UGX 165,000</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1215,10 +1183,10 @@
             const cartCount = document.getElementById('cartCount')
             const cartItems = document.getElementById('cartItems')
             const proceedCheckout = document.getElementById('proceedCheckout')
-            
+
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0)
             cartCount.textContent = totalItems
-            
+
             if (totalItems === 0) {
                 cartCount.style.display = 'none'
             } else {
@@ -1257,7 +1225,7 @@
                         </div>
                     </div>
                 `).join('')
-                
+
                 // Add event listeners to quantity buttons
                 setTimeout(() => {
                     cartItems.querySelectorAll('.minus-btn').forEach(btn => {
@@ -1267,7 +1235,7 @@
                             updateQuantity(productId, cart.find(item => item.id === productId).quantity - 1)
                         })
                     })
-                    
+
                     cartItems.querySelectorAll('.plus-btn').forEach(btn => {
                         btn.addEventListener('click', (e) => {
                             e.stopPropagation()
@@ -1285,7 +1253,7 @@
                         })
                     })
                 }, 0)
-                
+
                 proceedCheckout.style.display = 'block'
             }
         }
@@ -1303,25 +1271,25 @@
         }
 
         // Cart dropdown functionality
-        document.getElementById('cartIcon').addEventListener('click', function(e) {
+        document.getElementById('cartIcon').addEventListener('click', function (e) {
             e.stopPropagation()
             const dropdown = document.getElementById('cartDropdown')
             dropdown.classList.toggle('active')
         })
 
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (!e.target.closest('.icon-basket') && !e.target.closest('.cart-dropdown')) {
                 document.getElementById('cartDropdown').classList.remove('active')
             }
         })
 
         // Proceed to checkout
-        document.getElementById('proceedCheckout').addEventListener('click', function() {
+        document.getElementById('proceedCheckout').addEventListener('click', function () {
             window.location.href = 'checkout.html'
         })
 
         // Mobile menu functionality
-        document.getElementById('mobileMenuToggle').addEventListener('click', function() {
+        document.getElementById('mobileMenuToggle').addEventListener('click', function () {
             this.classList.toggle('active')
             document.getElementById('navLinks').classList.toggle('active')
         })
@@ -1334,28 +1302,28 @@
             try {
                 const response = await fetch('shopTest.html')
                 const html = await response.text()
-                
+
                 // Create a temporary DOM element to parse the HTML
                 const parser = new DOMParser()
                 const doc = parser.parseFromString(html, 'text/html')
-                
+
                 // Extract product data from the script tag
                 const scriptContent = doc.querySelector('script[type="module"]')
                 if (scriptContent) {
                     // Find the products array in the script content
                     const scriptText = scriptContent.textContent
                     const productsMatch = scriptText.match(/const products = (\[.*?\])/s)
-                    
+
                     if (productsMatch) {
                         try {
                             // Extract the products array and parse it
                             const productsText = productsMatch[1]
                             const products = JSON.parse(productsText)
-                            
+
                             // Select 3 random products
                             const shuffled = products.sort(() => 0.5 - Math.random())
                             const selectedProducts = shuffled.slice(0, 3)
-                            
+
                             // Render the products
                             renderDynamicProducts(selectedProducts)
                         } catch (e) {
@@ -1378,7 +1346,7 @@
         function renderDynamicProducts(products) {
             const grid = document.getElementById('dynamicProductsGrid')
             if (!grid) return
-            
+
             grid.innerHTML = products.map(product => `
                 <div class="dynamic-product-card" onclick="window.location.href='shopTest.html'">
                     <div class="dynamic-product-image" style="background-image: url('${product.image_url}');"></div>
@@ -1394,7 +1362,7 @@
         function renderFallbackProducts() {
             const grid = document.getElementById('dynamicProductsGrid')
             if (!grid) return
-            
+
             grid.innerHTML = `
                 <div class="dynamic-product-card" onclick="window.location.href='shopTest.html'">
                     <div class="dynamic-product-image" style="background-image: url('perfumes/lattafa nebras box.webp');"></div>
@@ -1426,68 +1394,68 @@
         // Load dynamic products when page loads
         loadDynamicProducts()
 
-        // Quiz Logic
-        (function () {
-            const overlay = null;
-            const questionEl = null;
-            const optionsEl = null;
-            const progressEl = null;
-            const openQuizBtn = document.getElementById('openQuizBtn');
-            const openQuizCard = document.getElementById('openQuizCard');
-            const closeBtn = document.getElementById('quizClose');
+            // Quiz Logic
+            (function () {
+                const overlay = null;
+                const questionEl = null;
+                const optionsEl = null;
+                const progressEl = null;
+                const openQuizBtn = document.getElementById('openQuizBtn');
+                const openQuizCard = document.getElementById('openQuizCard');
+                const closeBtn = document.getElementById('quizClose');
 
-            const steps = [
-                {
-                    id: 'gender', question: 'What type of fragrance are you looking for?', options: [
-                        { key: 'masculine', title: 'Masculine', desc: 'Fragrances crafted with bold, refined character' },
-                        { key: 'feminine', title: 'Feminine', desc: 'Fragrances with elegance, softness and grace' }]
-                },
-                {
-                    id: 'masculine_style', dependsOn: { id: 'gender', value: 'masculine' }, question: 'Which types of scents do you typically gravitate towards?', options: [
-                        { key: 'sophisticated', title: 'Sophisticated', desc: 'Multifaceted compositions that are perfectly balanced. Creamy gourmand notes with textured spices & woods.' },
-                        { key: 'sporty', title: 'Sporty', desc: 'Easy-going, clean fragrances. Bright and light scents that evoke fresh masculinity.' }]
-                },
-                {
-                    id: 'masculine_sophisticated_depth', dependsOn: { id: 'masculine_style', value: 'sophisticated' }, question: 'Do you prefer darker, richer moods or lighter, subtle freshness?', options: [
-                        { key: 'dark', title: 'Dark', desc: 'Rich, mysterious scents with mood. Distinct personality that commands attention.' },
-                        { key: 'light', title: 'Light', desc: 'Subtle, fresh, comfortable scents that embody relaxation and lightness.' }]
-                },
-                {
-                    id: 'masculine_sporty_vibe', dependsOn: { id: 'masculine_style', value: 'sporty' }, question: 'Which vibe are you going for?', options: [
-                        { key: 'sensual', title: 'Sensual', desc: 'Warm, sweet scents with depth. Rich spices and creamy woods wrapped in elegant sweetness.' },
-                        { key: 'clean', title: 'Clean', desc: 'Crisp, energizing scents with aromatic herbs, sparkling citrus and aquatic notes.' }]
-                },
-                {
-                    id: 'final_feel', question: 'How do you want your scent to make you feel?', options: [
-                        { key: 'easy', title: 'Easy going & casual' },
-                        { key: 'sophisticated', title: 'Sophisticated & sensual' },
-                        { key: 'adventurous', title: 'Outgoing & adventurous' },
-                        { key: 'fresh', title: 'Fresh & clean' },
-                        { key: 'classic', title: 'Classic & timeless' }]
-                }
-            ];
+                const steps = [
+                    {
+                        id: 'gender', question: 'What type of fragrance are you looking for?', options: [
+                            { key: 'masculine', title: 'Masculine', desc: 'Fragrances crafted with bold, refined character' },
+                            { key: 'feminine', title: 'Feminine', desc: 'Fragrances with elegance, softness and grace' }]
+                    },
+                    {
+                        id: 'masculine_style', dependsOn: { id: 'gender', value: 'masculine' }, question: 'Which types of scents do you typically gravitate towards?', options: [
+                            { key: 'sophisticated', title: 'Sophisticated', desc: 'Multifaceted compositions that are perfectly balanced. Creamy gourmand notes with textured spices & woods.' },
+                            { key: 'sporty', title: 'Sporty', desc: 'Easy-going, clean fragrances. Bright and light scents that evoke fresh masculinity.' }]
+                    },
+                    {
+                        id: 'masculine_sophisticated_depth', dependsOn: { id: 'masculine_style', value: 'sophisticated' }, question: 'Do you prefer darker, richer moods or lighter, subtle freshness?', options: [
+                            { key: 'dark', title: 'Dark', desc: 'Rich, mysterious scents with mood. Distinct personality that commands attention.' },
+                            { key: 'light', title: 'Light', desc: 'Subtle, fresh, comfortable scents that embody relaxation and lightness.' }]
+                    },
+                    {
+                        id: 'masculine_sporty_vibe', dependsOn: { id: 'masculine_style', value: 'sporty' }, question: 'Which vibe are you going for?', options: [
+                            { key: 'sensual', title: 'Sensual', desc: 'Warm, sweet scents with depth. Rich spices and creamy woods wrapped in elegant sweetness.' },
+                            { key: 'clean', title: 'Clean', desc: 'Crisp, energizing scents with aromatic herbs, sparkling citrus and aquatic notes.' }]
+                    },
+                    {
+                        id: 'final_feel', question: 'How do you want your scent to make you feel?', options: [
+                            { key: 'easy', title: 'Easy going & casual' },
+                            { key: 'sophisticated', title: 'Sophisticated & sensual' },
+                            { key: 'adventurous', title: 'Outgoing & adventurous' },
+                            { key: 'fresh', title: 'Fresh & clean' },
+                            { key: 'classic', title: 'Classic & timeless' }]
+                    }
+                ];
 
-            const state = {};
-            function getNextIndex(currentIndex) {
-                for (let i = currentIndex + 1; i < steps.length; i++) {
-                    const s = steps[i];
-                    if (!s.dependsOn) return i;
-                    const depVal = state[s.dependsOn.id];
-                    if (depVal === s.dependsOn.value) return i;
+                const state = {};
+                function getNextIndex(currentIndex) {
+                    for (let i = currentIndex + 1; i < steps.length; i++) {
+                        const s = steps[i];
+                        if (!s.dependsOn) return i;
+                        const depVal = state[s.dependsOn.id];
+                        if (depVal === s.dependsOn.value) return i;
+                    }
+                    return -1;
                 }
-                return -1;
-            }
-            function getFirstIndex() { return 0; }
-            function countRemaining(fromIndex) {
-                let count = 1; let current = fromIndex;
-                while (true) { const next = getNextIndex(current); if (next === -1) break; count++; current = next; }
-                return count;
-            }
-            function openQuiz() { window.location.href = 'quiz.html'; }
-            const safe = (el, evt, fn) => { if (el) el.addEventListener(evt, fn); };
-            safe(document.getElementById('openQuizBtn'), 'click', (e) => { e.preventDefault(); openQuiz(); });
-            safe(document.getElementById('openQuizCard'), 'click', (e) => { e.preventDefault(); openQuiz(); });
-        })();
+                function getFirstIndex() { return 0; }
+                function countRemaining(fromIndex) {
+                    let count = 1; let current = fromIndex;
+                    while (true) { const next = getNextIndex(current); if (next === -1) break; count++; current = next; }
+                    return count;
+                }
+                function openQuiz() { window.location.href = 'quiz.html'; }
+                const safe = (el, evt, fn) => { if (el) el.addEventListener(evt, fn); };
+                safe(document.getElementById('openQuizBtn'), 'click', (e) => { e.preventDefault(); openQuiz(); });
+                safe(document.getElementById('openQuizCard'), 'click', (e) => { e.preventDefault(); openQuiz(); });
+            })();
 
     </script>
 </body>
