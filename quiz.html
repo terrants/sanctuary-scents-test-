@@ -349,6 +349,52 @@
             background: #4a2c0f;
             transform: translateY(-2px);
         }
+
+        /* Make final profile box responsive */
+#opts > div:first-child {
+  max-width: 100%;
+  width: 100%;
+}
+
+/* Responsive recommendations grid */
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  justify-items: center;
+}
+
+.recommendation-card {
+  width: 100%;
+  max-width: 100%;
+}
+
+.recommendation-image {
+  height: auto;
+  aspect-ratio: 1 / 1; /* keeps square proportion */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 600px) and (max-width: 1024px) {
+  .recommendations-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .recommendation-card {
+    max-width: 100%;
+  }
+}
+
+/* Desktop: 3 columns */
+@media (min-width: 1025px) {
+  .recommendations-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
     </style>
 </head>
 
