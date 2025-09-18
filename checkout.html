@@ -259,16 +259,23 @@
   <div class="chat-text" id="chatText">Chat with us</div>
   <div class="floating-whatsapp" id="whatsappButton"><div class="whatsapp-icon"></div></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = 'https://ptnffxklbwkgzbsegtmr.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0bmZmeGtsYndrZ3pic2VndG1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTI1NjksImV4cCI6MjA3MTYyODU2OX0.mEWq1X_0EGxSwd9Xf6BFAMLK9e_nDkA33ZIgKoDihLs';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // Elements
+  const paymentMethodsEls = Array.from(document.querySelectorAll('.payment-method'));
+  const mobileMoneySection = document.getElementById('mobileMoneySection');
+  const mobileDeliverySection = document.getElementById('mobileDeliverySection');
+  const cashDeliverySection = document.getElementById('cashDeliverySection');
+  const bankSection = document.getElementById('bankSection');
   const checkoutBtn = document.getElementById('checkoutBtn');
   const form = document.getElementById('checkoutForm');
   const cartItemsContainer = document.getElementById('cartItemsContainer');
 
+  // Cart utilities
   function getCartItems() {
     try { return JSON.parse(localStorage.getItem('cart') || '[]'); } catch { return []; }
   }
@@ -304,7 +311,7 @@
     }
 
     const subtotal = items.reduce((s, it) => s + (it.price * it.quantity), 0);
-    const shipping = items.length ? 10000 : 0; // ✅ changed to 10k
+    const shipping = items.length ? 10000 : 0; // ✅ updated shipping
     const total = subtotal + shipping;
 
     document.getElementById('subtotal').textContent = formatUGX(subtotal);
@@ -326,6 +333,40 @@
     validateForm();
   }
 
+  // Payment method selection logic (restored)
+  function clearPaymentSelection() {
+    paymentMethodsEls.forEach(el => {
+      el.classList.remove('selected');
+      el.setAttribute('aria-checked', 'false');
+    });
+    mobileMoneySection.classList.remove('active');
+    mobileDeliverySection.classList.remove('active');
+    cashDeliverySection.classList.remove('active');
+    bankSection.classList.remove('active');
+  }
+
+  function selectPayment(el) {
+    clearPaymentSelection();
+    el.classList.add('selected');
+    el.setAttribute('aria-checked', 'true');
+    const method = el.dataset.method;
+    if (method === 'mobile') mobileMoneySection.classList.add('active');
+    else if (method === 'mobile-delivery') mobileDeliverySection.classList.add('active');
+    else if (method === 'cash-delivery') cashDeliverySection.classList.add('active');
+    else if (method === 'bank') bankSection.classList.add('active');
+    validateForm();
+  }
+
+  paymentMethodsEls.forEach(el => {
+    el.addEventListener('click', () => selectPayment(el));
+    el.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        selectPayment(el);
+      }
+    });
+  });
+
   function validateForm() {
     const items = getCartItems();
     let isValid = items.length > 0;
@@ -337,6 +378,13 @@
     return isValid;
   }
 
+  // Form change validation
+  Array.from(document.querySelectorAll('#checkoutForm input, #checkoutForm select, #checkoutForm textarea')).forEach(el => {
+    el.addEventListener('input', validateForm);
+    el.addEventListener('change', validateForm);
+  });
+
+  // Checkout submission
   checkoutBtn.addEventListener('click', async () => {
     if (checkoutBtn.disabled) return;
     checkoutBtn.textContent = 'Processing...';
@@ -348,10 +396,9 @@
     const paymentMethod = selectedPaymentEl ? selectedPaymentEl.dataset.method : null;
 
     const subtotal = items.reduce((s, it) => s + (it.price * it.quantity), 0);
-    const shipping = items.length ? 10000 : 0; // ✅ updated shipping
+    const shipping = items.length ? 10000 : 0;
     const total = subtotal + shipping;
 
-    // build safe record (only fields that exist in table)
     const orderRecord = {
       first_name: formData.get('firstName'),
       last_name: formData.get('lastName'),
@@ -368,7 +415,6 @@
       cart_items: items
     };
 
-    // add payment-specific info
     if (paymentMethod === 'mobile') {
       orderRecord.mobile_provider = formData.get('mobileProvider') || null;
       orderRecord.mobile_number = formData.get('mobileNumber') || null;
@@ -392,13 +438,13 @@
       console.error('Supabase insert error:', err.message);
       checkoutBtn.textContent = 'Complete Order';
       checkoutBtn.disabled = false;
-      // no alert popup – fail silently or log to console
     }
   });
 
   renderCart();
   validateForm();
 </script>
+
 
 </body>
 </html>
