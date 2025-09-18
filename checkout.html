@@ -259,272 +259,146 @@
   <div class="chat-text" id="chatText">Chat with us</div>
   <div class="floating-whatsapp" id="whatsappButton"><div class="whatsapp-icon"></div></div>
 
-  <!-- Supabase (update URL/KEY below) -->
-  <script src="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0bmZmeGtsYndrZ3pic2VndG1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTI1NjksImV4cCI6MjA3MTYyODU2OX0.mEWq1X_0EGxSwd9Xf6BFAMLK9e_nDkA33ZIgKoDihLs"></script>
-  <script>
-    // ---------- CONFIG: Replace these with your values ----------
-    const SUPABASE_URL = 'https://ptnffxklbwkgzbsegtmr.supabase.co'  // <-- your project URL
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0bmZmeGtsYndrZ3pic2VndG1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTI1NjksImV4cCI6MjA3MTYyODU2OX0.mEWq1X_0EGxSwd9Xf6BFAMLK9e_nDkA33ZIgKoDihLs' // <-- your anon key (or set via env build)
-    // ----------------------------------------------------------------
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://ptnffxklbwkgzbsegtmr.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB0bmZmeGtsYndrZ3pic2VndG1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNTI1NjksImV4cCI6MjA3MTYyODU2OX0.mEWq1X_0EGxSwd9Xf6BFAMLK9e_nDkA33ZIgKoDihLs';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // WhatsApp
-    (function () {
-      function openWhatsApp() { const phone = '256753610142'; window.open(`https://wa.me/${phone}`, '_blank'); }
-      const wBtn = document.getElementById('whatsappButton'); const wTxt = document.getElementById('chatText');
-      if (wBtn) wBtn.addEventListener('click', openWhatsApp);
-      if (wTxt) wTxt.addEventListener('click', openWhatsApp);
-    })();
+  const checkoutBtn = document.getElementById('checkoutBtn');
+  const form = document.getElementById('checkoutForm');
+  const cartItemsContainer = document.getElementById('cartItemsContainer');
 
-    // Form elements & controls
-    const paymentMethodsEls = Array.from(document.querySelectorAll('.payment-method'));
-    const mobileMoneySection = document.getElementById('mobileMoneySection');
-    const mobileDeliverySection = document.getElementById('mobileDeliverySection');
-    const cashDeliverySection = document.getElementById('cashDeliverySection');
-    const bankSection = document.getElementById('bankSection');
+  function getCartItems() {
+    try { return JSON.parse(localStorage.getItem('cart') || '[]'); } catch { return []; }
+  }
+  function saveCart(items) { localStorage.setItem('cart', JSON.stringify(items)); }
+  function formatUGX(n) { return `UGX ${Number(n || 0).toLocaleString()}`; }
 
-    const checkoutBtn = document.getElementById('checkoutBtn');
-    const form = document.getElementById('checkoutForm');
-    const cartItemsContainer = document.getElementById('cartItemsContainer');
+  function renderCart() {
+    const items = getCartItems();
+    cartItemsContainer.innerHTML = '';
 
-    // Utility: get cart items from localStorage (expected format: array of objects with id, name, price, image, quantity)
-    function getCartItems() {
-      try { return JSON.parse(localStorage.getItem('cart') || '[]'); } catch { return []; }
-    }
-    function saveCart(items) { localStorage.setItem('cart', JSON.stringify(items)); }
-
-    function formatUGX(n) { return `UGX ${Number(n || 0).toLocaleString()}`; }
-
-    // Render cart: clears placeholder and shows actual cart items
-    function renderCart() {
-      const items = getCartItems();
-      cartItemsContainer.innerHTML = '';
-
-      if (items.length === 0) {
-        cartItemsContainer.innerHTML = `
-          <div class="cart-item">
-            <div class="cart-item-details">
-              <h4>Your cart is empty</h4>
-              <p class="cart-item-price">Add fragrances from the shop to continue</p>
+    if (items.length === 0) {
+      cartItemsContainer.innerHTML = `<div class="cart-item">
+        <div class="cart-item-details">
+          <h4>Your cart is empty</h4>
+          <p class="cart-item-price">Add fragrances from the shop to continue</p>
+        </div>
+      </div>`;
+    } else {
+      items.forEach((it, idx) => {
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML = `
+          <div class="cart-item-image" style="background-image: url('${it.image || ''}');"></div>
+          <div class="cart-item-details" style="flex:1">
+            <h4>${it.name} x${it.quantity}</h4>
+            <p class="cart-item-price">${formatUGX(it.price * it.quantity)}</p>
+            <div style="margin-top:6px;">
+              <button class="remove-item-btn" data-index="${idx}" style="background:#e74c3c;color:white;border:none;padding:0.25rem 0.5rem;border-radius:4px;cursor:pointer;font-size:.8rem;">Remove</button>
             </div>
-          </div>
-        `;
-      } else {
-        // For each item, render a cart-item row
-        items.forEach((it, idx) => {
-          const row = document.createElement('div');
-          row.className = 'cart-item';
-          row.innerHTML = `
-            <div class="cart-item-image" style="background-image: url('${it.image || ''}');"></div>
-            <div class="cart-item-details" style="flex:1">
-              <h4>${it.name} x${it.quantity}</h4>
-              <p class="cart-item-price">${formatUGX(it.price * it.quantity)}</p>
-              <div style="margin-top:6px;">
-                <button class="remove-item-btn" data-index="${idx}" style="background:#e74c3c;color:white;border:none;padding:0.25rem 0.5rem;border-radius:4px;cursor:pointer;font-size:.8rem;">Remove</button>
-              </div>
-            </div>
-          `;
-          cartItemsContainer.appendChild(row);
-        });
-      }
-
-      // Totals
-      const subtotal = items.reduce((s, it) => s + (it.price * it.quantity), 0);
-      const shipping = items.length ? 15000 : 0;
-      const total = subtotal + shipping;
-
-      document.getElementById('subtotal').textContent = formatUGX(subtotal);
-      document.getElementById('total').textContent = formatUGX(total);
-
-      // Remove buttons
-      cartItemsContainer.querySelectorAll('.remove-item-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const idx = parseInt(btn.dataset.index);
-          if (!Number.isFinite(idx)) return;
-          const items = getCartItems();
-          items.splice(idx, 1);
-          saveCart(items);
-          renderCart();
-          validateForm(); // revalidate because cart changed
-        });
+          </div>`;
+        cartItemsContainer.appendChild(row);
       });
-
-      // Re-validate (so checkout button availability reacts to cart contents)
-      validateForm();
     }
 
-    // Payment selection & keyboard accessibility
-    function clearPaymentSelection() {
-      paymentMethodsEls.forEach(el => {
-        el.classList.remove('selected');
-        el.setAttribute('aria-checked', 'false');
-      });
-      // hide all panes
-      mobileMoneySection.classList.remove('active');
-      mobileDeliverySection.classList.remove('active');
-      cashDeliverySection.classList.remove('active');
-      bankSection.classList.remove('active');
-    }
+    const subtotal = items.reduce((s, it) => s + (it.price * it.quantity), 0);
+    const shipping = items.length ? 10000 : 0; // ✅ changed to 10k
+    const total = subtotal + shipping;
 
-    function selectPayment(el) {
-      clearPaymentSelection();
-      el.classList.add('selected');
-      el.setAttribute('aria-checked', 'true');
-      const method = el.dataset.method;
-      if (method === 'mobile') mobileMoneySection.classList.add('active');
-      else if (method === 'mobile-delivery') mobileDeliverySection.classList.add('active');
-      else if (method === 'cash-delivery') cashDeliverySection.classList.add('active');
-      else if (method === 'bank') bankSection.classList.add('active');
+    document.getElementById('subtotal').textContent = formatUGX(subtotal);
+    document.getElementById('total').textContent = formatUGX(total);
 
-      // Re-run validation now selection changed
-      validateForm();
-    }
-
-    paymentMethodsEls.forEach(el => {
-      // click
-      el.addEventListener('click', () => selectPayment(el));
-      // keyboard: space/enter
-      el.addEventListener('keydown', (e) => {
-        if (e.key === ' ' || e.key === 'Enter') {
-          e.preventDefault();
-          selectPayment(el);
-        }
-      });
-    });
-
-    // Validate form: requires essential fields + a selected payment method + non-empty cart
-    function validateForm() {
-      const items = getCartItems();
-      let isValid = true;
-
-      // ensure cart is not empty
-      if (!items.length) isValid = false;
-
-      // required personal fields
-      const firstName = document.getElementById('firstName').value.trim();
-      const lastName = document.getElementById('lastName').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const address = document.getElementById('address').value.trim();
-      const city = document.getElementById('city').value.trim();
-
-      if (!firstName || !lastName || !phone || !address || !city) isValid = false;
-
-      // ensure a payment method is selected
-      const selectedMethodEl = document.querySelector('.payment-method.selected');
-      if (!selectedMethodEl) isValid = false;
-
-      // payment-specific checks
-      if (selectedMethodEl) {
-        const method = selectedMethodEl.dataset.method;
-        if (method === 'mobile') {
-          const provider = document.getElementById('mobileProvider').value;
-          const number = document.getElementById('mobileNumber').value.trim();
-          if (!provider || !number) isValid = false;
-        } else if (method === 'mobile-delivery') {
-          const prov = document.getElementById('mobileDeliveryProvider').value;
-          const num = document.getElementById('mobileDeliveryNumber').value.trim();
-          if (!prov || !num) isValid = false;
-        } else if (method === 'bank') {
-          const bank = document.getElementById('bankName').value;
-          const acct = document.getElementById('accountNumber').value.trim();
-          const name = document.getElementById('accountName').value.trim();
-          if (!bank || !acct || !name) isValid = false;
-        }
-      }
-
-      checkoutBtn.disabled = !isValid;
-      return isValid;
-    }
-
-    // attach input listeners to revalidate on change
-    Array.from(document.querySelectorAll('#checkoutForm input, #checkoutForm select, #checkoutForm textarea')).forEach(el => {
-      el.addEventListener('input', validateForm);
-      el.addEventListener('change', validateForm);
-    });
-
-    // Checkout click behavior
-    checkoutBtn.addEventListener('click', async () => {
-      if (checkoutBtn.disabled) return;
-      checkoutBtn.textContent = 'Processing...';
-      checkoutBtn.disabled = true;
-
-      // collect form data
-      const items = getCartItems();
-      const formData = new FormData(form);
-
-      const selectedPaymentEl = document.querySelector('.paym����������������ted');
-      const paymentMethod = selectedPaymentEl ? selectedPaymentEl.dataset.method : null;
-
-      // build record for supabase
-      const subtotal = items.reduce((s, it) => s + (it.price * it.quantity), 0);
-      const shipping = items.length ? 15000 : 0;
-      const total = subtotal + shipping;
-      const orderRecord = {
-        first_name: formData.get('firstName'),
-        last_name: formData.get('lastName'),
-        email: formData.get('email') || null,
-        phone: formData.get('phone'),
-        address: formData.get('address'),
-        city: formData.get('city'),
-        district: null,
-        postal_code: null,
-        payment_method: paymentMethod,
-        mobile_provider: null,
-        mobile_number: null,
-        bank_name: null,
-        account_number: null,
-        account_name: null,
-        order_notes: formData.get('orderNotes') || formData.get('notes') || null,
-        subtotal: subtotal,
-        shipping: shipping,
-        tax: 0,
-        total: total,
-        cart_items: items
-      };
-
-      // fill payment-specific fields
-      if (paymentMethod === 'mobile') {
-        orderRecord.mobile_provider = formData.get('mobileProvider') || null;
-        orderRecord.mobile_number = formData.get('mobileNumber') || null;
-      } else if (paymentMethod === 'mobile-delivery') {
-        orderRecord.mobile_provider = formData.get('mobileDeliveryProvider') || null;
-        orderRecord.mobile_number = formData.get('mobileDeliveryNumber') || null;
-      } else if (paymentMethod === 'bank') {
-        orderRecord.bank_name = formData.get('bankName') || null;
-        orderRecord.account_number = formData.get('accountNumber') || null;
-        orderRecord.account_name = formData.get('accountName') || null;
-      }
-
-      try {
-        const { data, error } = await supabase.from('orders').insert([orderRecord]).select();
-        if (error) throw error;
-
-        // success: clear cart, notify, redirect (or show confirmation)
-        localStorage.removeItem('cart');
+    cartItemsContainer.querySelectorAll('.remove-item-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.dataset.index);
+        if (!Number.isFinite(idx)) return;
+        const items = getCartItems();
+        items.splice(idx, 1);
+        saveCart(items);
         renderCart();
-        alert('Order placed successfully — thank you! We will contact you shortly.');
-        window.location.href = 'shopTest.html';
-      } catch (err) {
-        console.error('Supabase insert error:', err);
-        alert('There was an error placing your order. Please try again or contact us.');
-        checkoutBtn.textContent = 'Complete Order';
-        checkoutBtn.disabled = false;
-      }
+        validateForm();
+      });
     });
 
-    // Preselect preferred payment from prior clicks (optional)
-    (function applyPreferredPayment() {
-      const pref = localStorage.getItem('preferredPayment');
-      if (!pref) return;
-      const toClick = document.querySelector(`.payment-method[data-method="${pref}"]`);
-      if (toClick) selectPayment(toClick);
-    })();
-
-    // initialize page
-    renderCart();
     validateForm();
+  }
 
-  </script>
+  function validateForm() {
+    const items = getCartItems();
+    let isValid = items.length > 0;
+    ['firstName','lastName','phone','address','city'].forEach(id => {
+      if (!document.getElementById(id).value.trim()) isValid = false;
+    });
+    if (!document.querySelector('.payment-method.selected')) isValid = false;
+    checkoutBtn.disabled = !isValid;
+    return isValid;
+  }
+
+  checkoutBtn.addEventListener('click', async () => {
+    if (checkoutBtn.disabled) return;
+    checkoutBtn.textContent = 'Processing...';
+    checkoutBtn.disabled = true;
+
+    const items = getCartItems();
+    const formData = new FormData(form);
+    const selectedPaymentEl = document.querySelector('.payment-method.selected');
+    const paymentMethod = selectedPaymentEl ? selectedPaymentEl.dataset.method : null;
+
+    const subtotal = items.reduce((s, it) => s + (it.price * it.quantity), 0);
+    const shipping = items.length ? 10000 : 0; // ✅ updated shipping
+    const total = subtotal + shipping;
+
+    // build safe record (only fields that exist in table)
+    const orderRecord = {
+      first_name: formData.get('firstName'),
+      last_name: formData.get('lastName'),
+      email: formData.get('email') || null,
+      phone: formData.get('phone'),
+      address: formData.get('address'),
+      city: formData.get('city'),
+      payment_method: paymentMethod,
+      order_notes: formData.get('orderNotes') || formData.get('notes') || null,
+      subtotal,
+      shipping,
+      tax: 0,
+      total,
+      cart_items: items
+    };
+
+    // add payment-specific info
+    if (paymentMethod === 'mobile') {
+      orderRecord.mobile_provider = formData.get('mobileProvider') || null;
+      orderRecord.mobile_number = formData.get('mobileNumber') || null;
+    } else if (paymentMethod === 'mobile-delivery') {
+      orderRecord.mobile_provider = formData.get('mobileDeliveryProvider') || null;
+      orderRecord.mobile_number = formData.get('mobileDeliveryNumber') || null;
+    } else if (paymentMethod === 'bank') {
+      orderRecord.bank_name = formData.get('bankName') || null;
+      orderRecord.account_number = formData.get('accountNumber') || null;
+      orderRecord.account_name = formData.get('accountName') || null;
+    }
+
+    try {
+      const { error } = await supabase.from('orders').insert([orderRecord]);
+      if (error) throw error;
+      localStorage.removeItem('cart');
+      renderCart();
+      checkoutBtn.textContent = 'Order Complete';
+      window.location.href = 'shopTest.html';
+    } catch (err) {
+      console.error('Supabase insert error:', err.message);
+      checkoutBtn.textContent = 'Complete Order';
+      checkoutBtn.disabled = false;
+      // no alert popup – fail silently or log to console
+    }
+  });
+
+  renderCart();
+  validateForm();
+</script>
+
 </body>
 </html>
