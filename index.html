@@ -1042,14 +1042,15 @@
     </section>
 
     <!-- Dynamic Featured Fragrances Section -->
+     <!---
     <section class="dynamic-products">
         <div class="container">
             <h2 class="section-title">Featured Fragrances</h2>
-            <div class="dynamic-products-grid" id="dynamicProductsGrid">
-                <!-- Dynamic products will be loaded here -->
-            </div>
+            <div id="featuredProducts" class="featured-grid"></div>
+
         </div>
     </section>
+    -->
 
     <!-- CTA Section -->
     <section class="cta">
@@ -1298,166 +1299,39 @@
         loadCart()
 
         // Load dynamic featured products
-        async function loadDynamicProducts() {
-            try {
-                const response = await fetch('shopTest.html')
-                const html = await response.text()
+    
+async function loadFeaturedProducts() {
+  try {
+    const res = await fetch("shopTest.html");
+    const text = await res.text();
+    const match = text.match(/const products = (.*?);\s*<\/script>/s);
+    if (!match) {
+      console.error("Could not find products array in shopTest.html");
+      return;
+    }
+    const products = eval(match[1]);
+    const shuffled = products.sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 3);
+    const grid = document.getElementById("dynamicProductsGrid");
+    grid.innerHTML = selected.map(p => `
+      <div class="dynamic-product-card">
+        <div class="dynamic-product-image" style="background-image: url('${p.image_url}')"></div>
+        <div class="dynamic-product-info">
+          <h3 class="dynamic-product-title">${p.product_name}</h3>
+          <p>${p.description || ""}</p>
+          <p class="dynamic-product-price">UGX ${Number(p.price).toLocaleString()}</p>
+          <a href="shopTest.html" class="btn btn-outline">View in Shop</a>
+        </div>
+      </div>
+    `).join("");
+  } catch (err) {
+    console.error("Error loading featured products:", err);
+  }
+}
 
-                // Create a temporary DOM element to parse the HTML
-                const parser = new DOMParser()
-                const doc = parser.parseFromString(html, 'text/html')
+loadFeaturedProducts();
+</scrip>
 
-                // Extract product data from the script tag
-                const scriptContent = doc.querySelector('script[type="module"]')
-                if (scriptContent) {
-                    // Find the products array in the script content
-                    const scriptText = scriptContent.textContent
-                    const productsMatch = scriptText.match(/const products = (\[.*?\])/s)
-
-                    if (productsMatch) {
-                        try {
-                            // Extract the products array and parse it
-                            const productsText = productsMatch[1]
-                            const products = JSON.parse(productsText)
-
-                            // Select 3 random products
-                            const shuffled = products.sort(() => 0.5 - Math.random())
-                            const selectedProducts = shuffled.slice(0, 3)
-
-                            // Render the products
-                            renderDynamicProducts(selectedProducts)
-                        } catch (e) {
-                            console.error('Error parsing products:', e)
-                            // Fallback to static products if parsing fails
-                            renderFallbackProducts()
-                        }
-                    } else {
-                        renderFallbackProducts()
-                    }
-                } else {
-                    renderFallbackProducts()
-                }
-            } catch (error) {
-                console.error('Error loading dynamic products:', error)
-                renderFallbackProducts()
-            }
-        }
-
-        function renderDynamicProducts(products) {
-            const grid = document.getElementById('dynamicProductsGrid')
-            if (!grid) return
-
-            grid.innerHTML = products.map(product => `
-                <div class="dynamic-product-card" onclick="window.location.href='shopTest.html'">
-                    <div class="dynamic-product-image" style="background-image: url('${product.image_url}');"></div>
-                    <div class="dynamic-product-info">
-                        <h3 class="dynamic-product-title">${product.product_name}</h3>
-                        <p>${product.description || 'A luxurious fragrance that captures the essence of sophistication and elegance.'}</p>
-                        <p class="dynamic-product-price">UGX ${product.price.toLocaleString()}</p>
-                    </div>
-                </div>
-            `).join('')
-        }
-
-        function renderFallbackProducts() {
-            const grid = document.getElementById('dynamicProductsGrid')
-            if (!grid) return
-
-            grid.innerHTML = `
-                <div class="dynamic-product-card" onclick="window.location.href='shopTest.html'">
-                    <div class="dynamic-product-image" style="background-image: url('perfumes/lattafa nebras box.webp');"></div>
-                    <div class="dynamic-product-info">
-                        <h3 class="dynamic-product-title">Lattafa Nebras</h3>
-                        <p>A sophisticated oriental fragrance featuring notes of vanilla, amber, and sandalwood.</p>
-                        <p class="dynamic-product-price">UGX 135,000</p>
-                    </div>
-                </div>
-                <div class="dynamic-product-card" onclick="window.location.href='shopTest.html'">
-                    <div class="dynamic-product-image" style="background-image: url('perfumes/lattafa eclaire box.webp');"></div>
-                    <div class="dynamic-product-info">
-                        <h3 class="dynamic-product-title">Lattafa Eclaire</h3>
-                        <p>An elegant blend of bergamot, jasmine, and white musk for daily wear.</p>
-                        <p class="dynamic-product-price">UGX 145,000</p>
-                    </div>
-                </div>
-                <div class="dynamic-product-card" onclick="window.location.href='shopTest.html'">
-                    <div class="dynamic-product-image" style="background-image: url('perfumes/club de nuit  intense man box.webp');"></div>
-                    <div class="dynamic-product-info">
-                        <h3 class="dynamic-product-title">Club de Nuit Intense Man</h3>
-                        <p>A powerful masculine fragrance with distinctive smoky leather accord.</p>
-                        <p class="dynamic-product-price">UGX 165,000</p>
-                    </div>
-                </div>
-            `
-        }
-
-        // Load dynamic products when page loads
-        loadDynamicProducts()
-
-            // Quiz Logic
-            (function () {
-                const overlay = null;
-                const questionEl = null;
-                const optionsEl = null;
-                const progressEl = null;
-                const openQuizBtn = document.getElementById('openQuizBtn');
-                const openQuizCard = document.getElementById('openQuizCard');
-                const closeBtn = document.getElementById('quizClose');
-
-                const steps = [
-                    {
-                        id: 'gender', question: 'What type of fragrance are you looking for?', options: [
-                            { key: 'masculine', title: 'Masculine', desc: 'Fragrances crafted with bold, refined character' },
-                            { key: 'feminine', title: 'Feminine', desc: 'Fragrances with elegance, softness and grace' }]
-                    },
-                    {
-                        id: 'masculine_style', dependsOn: { id: 'gender', value: 'masculine' }, question: 'Which types of scents do you typically gravitate towards?', options: [
-                            { key: 'sophisticated', title: 'Sophisticated', desc: 'Multifaceted compositions that are perfectly balanced. Creamy gourmand notes with textured spices & woods.' },
-                            { key: 'sporty', title: 'Sporty', desc: 'Easy-going, clean fragrances. Bright and light scents that evoke fresh masculinity.' }]
-                    },
-                    {
-                        id: 'masculine_sophisticated_depth', dependsOn: { id: 'masculine_style', value: 'sophisticated' }, question: 'Do you prefer darker, richer moods or lighter, subtle freshness?', options: [
-                            { key: 'dark', title: 'Dark', desc: 'Rich, mysterious scents with mood. Distinct personality that commands attention.' },
-                            { key: 'light', title: 'Light', desc: 'Subtle, fresh, comfortable scents that embody relaxation and lightness.' }]
-                    },
-                    {
-                        id: 'masculine_sporty_vibe', dependsOn: { id: 'masculine_style', value: 'sporty' }, question: 'Which vibe are you going for?', options: [
-                            { key: 'sensual', title: 'Sensual', desc: 'Warm, sweet scents with depth. Rich spices and creamy woods wrapped in elegant sweetness.' },
-                            { key: 'clean', title: 'Clean', desc: 'Crisp, energizing scents with aromatic herbs, sparkling citrus and aquatic notes.' }]
-                    },
-                    {
-                        id: 'final_feel', question: 'How do you want your scent to make you feel?', options: [
-                            { key: 'easy', title: 'Easy going & casual' },
-                            { key: 'sophisticated', title: 'Sophisticated & sensual' },
-                            { key: 'adventurous', title: 'Outgoing & adventurous' },
-                            { key: 'fresh', title: 'Fresh & clean' },
-                            { key: 'classic', title: 'Classic & timeless' }]
-                    }
-                ];
-
-                const state = {};
-                function getNextIndex(currentIndex) {
-                    for (let i = currentIndex + 1; i < steps.length; i++) {
-                        const s = steps[i];
-                        if (!s.dependsOn) return i;
-                        const depVal = state[s.dependsOn.id];
-                        if (depVal === s.dependsOn.value) return i;
-                    }
-                    return -1;
-                }
-                function getFirstIndex() { return 0; }
-                function countRemaining(fromIndex) {
-                    let count = 1; let current = fromIndex;
-                    while (true) { const next = getNextIndex(current); if (next === -1) break; count++; current = next; }
-                    return count;
-                }
-                function openQuiz() { window.location.href = 'quiz.html'; }
-                const safe = (el, evt, fn) => { if (el) el.addEventListener(evt, fn); };
-                safe(document.getElementById('openQuizBtn'), 'click', (e) => { e.preventDefault(); openQuiz(); });
-                safe(document.getElementById('openQuizCard'), 'click', (e) => { e.preventDefault(); openQuiz(); });
-            })();
-
-    </script>
 </body>
 
 </html>
